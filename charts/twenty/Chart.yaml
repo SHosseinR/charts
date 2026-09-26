@@ -3,7 +3,7 @@ apiVersion: v2
 name: twenty
 description: Private CRM workspace with native server and worker, PostgreSQL, authenticated Redis and retained encryption identity.
 type: application
-version: 1.0.1
+version: 1.0.2
 appVersion: 2.41.0
 kubeVersion: '>=1.26.0-0'
 maintainers:
@@ -20,7 +20,7 @@ icon: https://helmforge.dev/icons/charts/twenty.png
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: "upgrade Twenty to 2.41.0 (#1288)"
+      description: "upgrade to v2.41.0 (#1333)"
   artifacthub.io/maintainers: |
     - name: HelmForge
       email: berlofa@helmforge.dev
