@@ -3,7 +3,7 @@ apiVersion: v2
 name: mariadb
 description: MariaDB for Kubernetes with explicit standalone and replication modes
 type: application
-version: 2.1.1
+version: 2.1.2
 appVersion: "13.0.2"
 kubeVersion: ">=1.26.0-0"
 maintainers:
@@ -21,7 +21,7 @@ icon: https://helmforge.dev/icons/charts/mariadb.png
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: "bump MariaDB to 13.0.2 (#1272)"
+      description: "upgrade to 13.0.2 (#1334)"
   artifacthub.io/maintainers: |
     - name: HelmForge
       email: berlofa@helmforge.dev
