@@ -3,7 +3,7 @@ apiVersion: v2
 name: archivebox
 description: ArchiveBox self-hosted web archiving with Chromium headless, multi-format capture, and persistent storage
 type: application
-version: 1.1.12
+version: 1.1.13
 appVersion: "0.9.70"
 kubeVersion: ">=1.26.0-0"
 maintainers:
@@ -24,9 +24,7 @@ sources:
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: "upgrade archivebox to 0.9.70 (#1340)"
-    - kind: fixed
-      description: "follow the 0.9 entrypoint, port, and longer first-run initialization contract"
+      description: "upgrade to 0.9.70 (#1360)"
   artifacthub.io/maintainers: |
     - name: HelmForge
       email: berlofa@helmforge.dev
