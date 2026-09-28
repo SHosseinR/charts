@@ -5,7 +5,7 @@ description: Keycloak for Kubernetes with explicit dev and production modes
 home: https://helmforge.dev
 icon: https://helmforge.dev/icons/charts/keycloak.png
 type: application
-version: 3.0.13
+version: 3.0.14
 appVersion: "26.7.4"
 kubeVersion: ">=1.26.0-0"
 keywords:
@@ -19,7 +19,7 @@ maintainers:
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: "bump keycloak to 26.7.4 (#1303)"
+      description: "bump HelmForge subchart dependencies to latest minor/patch (#1338)"
   artifacthub.io/maintainers: |
     - name: HelmForge
       email: berlofa@helmforge.dev
