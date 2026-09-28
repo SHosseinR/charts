@@ -3,7 +3,7 @@ apiVersion: v2
 name: appwrite
 description: Appwrite self-hosted backend-as-a-service platform with MariaDB and Redis
 type: application
-version: 2.0.1
+version: 2.0.2
 appVersion: "2.3.0"
 kubeVersion: ">=1.26.0-0"
 icon: https://helmforge.dev/icons/charts/appwrite.png
@@ -27,7 +27,7 @@ sources:
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: "upgrade appwrite to 2.3.0 (#1339)"
+      description: "upgrade to 2.3.0 (#1359)"
   artifacthub.io/maintainers: |
     - name: HelmForge
       email: berlofa@helmforge.dev
