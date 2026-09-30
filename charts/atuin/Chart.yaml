@@ -3,7 +3,7 @@ apiVersion: v2
 name: atuin
 description: Production-ready Helm chart for the Atuin shell history sync server
 type: application
-version: 0.1.0
+version: 1.0.0
 appVersion: "18.23.0"
 kubeVersion: ">=1.30.0-0"
 home: https://helmforge.dev/docs/charts/atuin
@@ -22,8 +22,8 @@ keywords:
   - kubernetes
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: "add chart (#1382)"
+    - kind: changed
+      description: "BREAKING: add chart (#1383)"
   artifacthub.io/category: database
   artifacthub.io/license: Apache-2.0
   artifacthub.io/prerelease: "true"
