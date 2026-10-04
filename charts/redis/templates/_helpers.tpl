@@ -348,6 +348,20 @@ annotations:
 {{- include "redis.probeCommand" . -}}
 {{- end -}}
 
+{{/*
+Readiness for Sentinel data nodes. A replica answers PING while it still holds
+stale data and is waiting for or receiving a full sync, so it is only ready once
+its replication link is up. Rollouts then wait for the restarted replica to
+catch up before they restart the next node, which may be the master.
+*/}}
+{{- define "redis.nodeReadinessCommand" -}}
+{{- $cli := printf "redis-cli %s -p %v" (include "redis.cliTlsArgs" .) .Values.service.ports.redis -}}
+{{- if .Values.auth.enabled -}}
+{{- $cli = printf "REDISCLI_AUTH=\"$REDIS_PASSWORD\" %s" $cli -}}
+{{- end -}}
+{{ include "redis.probeCommand" . }}; info="$({{ $cli }} info replication | tr -d '\r')"; case "$info" in *role:master*) ;; *role:slave*) printf '%s\n' "$info" | grep -qx 'master_link_status:up' && printf '%s\n' "$info" | grep -qx 'master_sync_in_progress:0' ;; *) exit 1 ;; esac
+{{- end -}}
+
 {{- define "redis.sentinelProbeCommand" -}}
 redis-cli {{ include "redis.cliTlsArgs" . }} -p {{ .Values.service.ports.sentinel }} ping
 {{- end -}}
