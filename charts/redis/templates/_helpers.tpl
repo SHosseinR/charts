@@ -200,6 +200,16 @@ Common names.
 {{- join " " $fqdns -}}
 {{- end -}}
 
+{{- define "redis.sentinelPeerFqdns" -}}
+{{- $root := . -}}
+{{- $headless := include "redis.serviceFqdn" (dict "root" . "name" (include "redis.sentinelHeadlessServiceName" .)) -}}
+{{- $fqdns := list -}}
+{{- range $i := until (int .Values.sentinel.replicaCount) -}}
+{{- $fqdns = append $fqdns (printf "%s-%d.%s" (include "redis.sentinelStatefulSetName" $root) $i $headless) -}}
+{{- end -}}
+{{- join " " $fqdns -}}
+{{- end -}}
+
 {{- define "redis.clusterPodFqdn" -}}
 {{- printf "%s.%s" .podName (include "redis.headlessServiceFqdn" .root) -}}
 {{- end -}}

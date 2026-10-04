@@ -145,15 +145,21 @@ Two checks prevent that:
   may be the master, only after the previous one has caught up. Liveness and
   startup probes still use `PING`, so a replica in a long sync is not restarted.
 - **Graceful failover.** Before the active master requests a Sentinel failover, the
-  preStop hook waits for a replica that is `state=online` and acknowledged within
-  the last second. It then pauses writes (`CLIENT PAUSE WRITE`), waits until that
-  replica reaches the master replication offset, and requests the failover. If
-  Sentinel refuses, for example because it has not reconnected to a replica that
-  just restarted, the hook releases the pause and tries again. Writes stay paused
-  from the accepted request until the old master exits, so clients retry against
-  the new master instead of writing to the old one. If no attempt succeeds within
-  `sentinel.gracefulFailover.replicaSyncTimeoutSeconds`, the hook skips the
-  failover and lets the master restart in place.
+  preStop hook waits until every replica it feeds is `state=online` and
+  acknowledged within the last second. Sentinel chooses which replica to promote,
+  and its list can include a replica that is not connected to this master, so the
+  hook also asks every replica a Sentinel could promote whether its link is up and
+  its sync finished. It then pauses writes (`CLIENT PAUSE WRITE`), waits until all
+  of those replicas reach the master replication offset, and requests the
+  failover. If Sentinel
+  refuses, for example because it has not reconnected to a replica that just
+  restarted, the hook releases the pause and tries again. Once Sentinel accepts,
+  or reports that a failover is already in progress, writes stay paused until the
+  old master exits, even if the hook cannot confirm the result, so clients retry
+  against the new master instead of writing to the old one. If no attempt
+  succeeds within `sentinel.gracefulFailover.replicaSyncTimeoutSeconds`, or if the
+  `CLIENT` command is unavailable (for example renamed through `config.redis`),
+  the hook skips the failover and lets the master restart in place.
 
 When every data node stops at once, for example on `helm uninstall` or namespace
 deletion, the master has no replica to hand over to. It keeps serving and waits for
