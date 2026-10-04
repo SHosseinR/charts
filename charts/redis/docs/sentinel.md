@@ -130,6 +130,40 @@ guards are disabled, if no replica is promotable, or if every data node restarts
 the same time. Keep `node.persistence.enabled=true` when RDB/AOF and the
 bootstrap marker must survive pod reschedules.
 
+### Replica sync during rollouts and voluntary shutdowns
+
+A restarted replica reloads its own AOF/RDB and then needs a full sync from the
+master. While it waits for and receives that sync it already answers `PING`, but
+it holds the data from the moment it stopped. Promoting it at that point would
+silently drop every write the master accepted since the replica restarted.
+
+Two checks prevent that:
+
+- **Readiness.** A data node running as a replica is ready only when
+  `master_link_status:up` and `master_sync_in_progress:0`. A master is ready when
+  it answers `PING`. A StatefulSet rollout therefore restarts the next node, which
+  may be the master, only after the previous one has caught up. Liveness and
+  startup probes still use `PING`, so a replica in a long sync is not restarted.
+- **Graceful failover.** Before the active master requests a Sentinel failover, the
+  preStop hook waits for a replica that is `state=online` and acknowledged within
+  the last second. It then pauses writes (`CLIENT PAUSE WRITE`), waits until that
+  replica reaches the master replication offset, and requests the failover. If
+  Sentinel refuses, for example because it has not reconnected to a replica that
+  just restarted, the hook releases the pause and tries again. Writes stay paused
+  from the accepted request until the old master exits, so clients retry against
+  the new master instead of writing to the old one. If no attempt succeeds within
+  `sentinel.gracefulFailover.replicaSyncTimeoutSeconds`, the hook skips the
+  failover and lets the master restart in place.
+
+When every data node stops at once, for example on `helm uninstall` or namespace
+deletion, the master has no replica to hand over to. It keeps serving and waits for
+`replicaSyncTimeoutSeconds` before it exits, so the deletion takes that long.
+
+For large datasets a full sync can take minutes. Raise
+`sentinel.gracefulFailover.replicaSyncTimeoutSeconds` and
+`terminationGracePeriodSeconds` together; the grace period must cover
+`replicaSyncTimeoutSeconds + 3 * maxAttempts + 5` seconds plus Redis shutdown time.
+
 ### Fail-closed behavior
 
 When persistence is enabled and a node was already bootstrapped, it refuses to start as an
