@@ -382,8 +382,9 @@ data:
       # until shutdown so clients retry against the new master instead of
       # writing to this one. Reads, PING and INFO keep working. Without the
       # pause a write accepted after the offset check could miss the promoted
-      # replica, so never hand over unpaused.
-      pause_reply="$(vcli -p "$REDIS_PORT" client pause {{ mul (add (mul 3 (int .Values.sentinel.gracefulFailover.maxAttempts)) 15) 1000 }} write 2>&1 | tr -d '\r')"
+      # replica, so never hand over unpaused. The pause outlasts the grace
+      # period, so it can only end with this process or an explicit unpause.
+      pause_reply="$(vcli -p "$REDIS_PORT" client pause {{ mul (add (int .Values.terminationGracePeriodSeconds) 5) 1000 }} write 2>&1 | tr -d '\r')"
       [ "$pause_reply" = "OK" ] || give_up "could not pause writes: ${pause_reply:-no reply}"
       i=0
       caught_up=0

@@ -137,6 +137,7 @@ tests:
       architecture: sentinel
       sentinel.gracefulFailover.replicaSyncTimeoutSeconds: 420
       sentinel.gracefulFailover.maxAttempts: 10
+      terminationGracePeriodSeconds: 600
     asserts:
       - matchRegex:
           path: data["node-prestop.sh"]
@@ -152,7 +153,7 @@ tests:
           pattern: "INPROG\\*\\)"
       - matchRegex:
           path: data["node-prestop.sh"]
-          pattern: "client pause 45000 write"
+          pattern: "client pause 605000 write"
       - matchRegex:
           path: data["node-prestop.sh"]
           pattern: "all_in_sync \"\\$target\""
